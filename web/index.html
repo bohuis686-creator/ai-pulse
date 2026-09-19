@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI Pulse：用可复现的题目检查 AI 表现，支持 ChatGPT、DeepSeek 聊天手动测试与 API 自动测试。">
+  <title>AI Pulse · AI 状态体检</title>
+  <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="AI Pulse 首页"><img src="/favicon.svg" alt="" width="35" height="35"><span>AI Pulse<span class="brand-dot">.</span></span></a><nav><a href="#method">如何判断</a><a href="https://github.com/bohuis686-creator/ai-pulse" target="_blank" rel="noopener noreferrer">GitHub ↗</a><span class="local-badge">● 本地运行</span></nav></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">A SMALL CHECK. A CLEARER PICTURE.</p><h1>今天的 AI，<br>还在状态吗<span>？</span></h1><p class="lead">把“感觉变笨了”变成可对照的记录。<br>固定题目，透明评分，用数据观察表现变化。</p></div><div class="intro-aside"><span class="version">PULSE / 0.1</span><p>24 <small>道客观题</small><br>06 <small>个能力维度</small><br>00 <small>项运行依赖</small></p><span>ChatGPT · DeepSeek · API models</span></div></section>
+    <div class="workspace">
+      <section class="panel test-panel" aria-labelledby="test-heading">
+        <div class="panel-heading"><span class="step">01</span><h2 id="test-heading">开始一次体检</h2></div>
+        <div class="tabs" role="group" aria-label="测试模式"><button id="manual-tab" aria-pressed="true">聊天窗口测试</button><button id="api-tab" aria-pressed="false">API 自动测试</button></div>
+        <p id="mode-hint" class="hint">无需 API Key。复制题目到新对话，再粘贴 AI 的回答。</p>
+        <div class="field-row"><label>题目种子<input id="seed" value="pulse-2026" maxlength="80" autocomplete="off"></label><button class="icon-button" id="new-seed" title="更换种子会生成另一套题，不能直接与旧基线比较">换一套 ↻</button></div>
+        <p class="micro">做前后对比时，请保留相同种子和模型设置。</p>
+        <div id="manual-fields">
+          <label>模型与设置备注<input id="manual-model" maxlength="120" placeholder="例如：ChatGPT · 所选模型 · 思考开启"></label>
+          <div class="action-row"><button id="copy-prompt" class="secondary">① 复制 24 道测试题 ↗</button><button id="show-prompt" class="text-button">预览题目</button></div>
+          <details id="prompt-details"><summary>测试题目全文</summary><textarea id="prompt" readonly aria-label="可复制的测试题目" rows="7"></textarea></details>
+          <label>② 粘贴完整回答<textarea id="answer" rows="7" placeholder='{"arithmetic-1": 123, "logic-1": "蓝", ...}' spellcheck="false"></textarea></label>
+          <p class="micro">新建空白对话，关闭联网/代码工具；保留相同思考设置。粘贴 JSON 答案对象即可。</p>
+          <button id="grade" class="primary wide">③ 评分并保存记录 <span>→</span></button>
+        </div>
+        <div id="api-fields" hidden>
+          <label>服务商<select id="provider"><option value="openai">OpenAI API</option><option value="deepseek">DeepSeek API</option><option value="openrouter">OpenRouter</option></select></label>
+          <label>模型 ID<input id="api-model" maxlength="120" placeholder="填写服务商控制台中的模型 ID" autocomplete="off"></label>
+          <label>API Key<input id="api-key" type="password" placeholder="仅用于本次请求，不保存" autocomplete="off" spellcheck="false"></label>
+          <div class="field-row"><label>每题重复次数<select id="repeats"><option value="1">1 次 · 快速查看</option><option value="3" selected>3 次 · 建议对比</option><option value="5">5 次 · 更充分</option></select></label><label>输出 token 上限<input id="max-tokens" type="number" min="128" max="32768" value="4096"></label></div>
+          <details><summary>模型参数（可留空）</summary><div class="field-row"><label>Temperature<input id="temperature" type="number" min="0" max="2" step="0.1" placeholder="服务商默认"></label><label>Reasoning effort<select id="reasoning"><option value="">服务商默认</option><option>low</option><option>medium</option><option>high</option></select></label></div><p class="micro">不同模型支持的参数不同；修改参数后请重建基线。</p></details>
+          <p id="call-budget" class="budget">本次最多 72 次独立请求，可能产生服务商 API 费用。</p>
+          <button id="run-api" class="primary wide">开始自动测试 <span>→</span></button><button id="cancel" class="secondary wide" hidden>停止后续请求</button>
+          <p class="micro">每题使用独立上下文，不联网、不调用工具。接口失败立即停止；不会自动重试付费请求。</p>
+        </div>
+        <div id="progress-wrap" hidden><progress id="progress" value="0" max="72"></progress><p id="progress-label" class="micro"></p></div>
+        <p id="status" role="status" aria-live="polite"></p>
+      </section>
+      <section class="results-panel" aria-labelledby="result-heading">
+        <div class="panel-heading"><span class="step">02</span><h2 id="result-heading">表现快照</h2><button id="demo" class="text-button">试用演示 ↗</button></div>
+        <div id="empty" class="empty"><div class="empty-mark" aria-hidden="true">⌁</div><h3>让第一份记录成为起点。</h3><p>完成测试后，这里将显示维度得分、<br>逐题结果和与基线的差异。</p><span>不凭一道题，就给 AI 下结论。</span></div>
+        <div id="result" hidden>
+          <div class="score-card"><div><p id="result-tag" class="eyebrow">有效回答正确率</p><div class="score"><span id="score">—</span><small>/ 100</small></div><p id="result-model"></p></div><div class="score-meta"><span id="completed"></span><span id="latency"></span><span id="result-time"></span></div></div>
+          <div id="comparison" class="notice"></div>
+          <div id="dimensions" class="dimensions"></div>
+          <div class="toolbar"><button id="set-baseline" class="secondary">设为对比基线</button><button id="export-json" class="text-button">导出 JSON ↓</button><button id="export-md" class="text-button">导出报告 ↓</button></div>
+          <details class="answers"><summary>查看逐题答案与评分依据 <span id="answer-count"></span></summary><div id="answer-list"></div></details>
+        </div>
+        <section class="history-section"><div class="history-heading"><h3>历史记录 <span id="history-count">0</span></h3><label class="file-button">导入 JSON<input id="import" type="file" accept=".json,application/json"></label></div><p class="micro">仅保存在此浏览器，最多 10 份。需要长期留存请导出。</p><div id="trend"></div><div id="history"></div><button id="clear" class="text-button danger" hidden>清空本机历史</button></section>
+      </section>
+    </div>
+    <section id="method" class="method"><div><p class="eyebrow">READ THE SIGNAL, NOT THE HYPE.</p><h2>观察变化，<br>也尊重不确定性。</h2></div><div><h3>相同条件，才有可比性</h3><p>同一模型、种子、模式与参数才能对比。聊天网页与 API 的系统提示词、工具和路由可能不同，结果不能直接等同。</p></div><div><h3>下降信号，不是“降智实锤”</h3><p>API 每题至少重复 3 次后，若下降 ≥10 个百分点且配对重采样区间低于 0，才提示下降信号。有限公开题集不能测出真实模型身份或后台算力。</p></div></section>
+  </main><footer><span>AI Pulse · Open source, transparent scores.</span><span>本地存储 · 无分析追踪 · MIT License</span></footer>
+</body></html>

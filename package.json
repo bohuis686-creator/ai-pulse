@@ -1,0 +1,10 @@
+{
+  "name": "ai-pulse-bench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A local-first, reproducible AI performance check for chat apps and APIs.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node src/server.js", "test": "node --test", "check": "node --check src/server.js && node --check web/app.js" },
+  "license": "MIT"
+}
