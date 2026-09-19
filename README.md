@@ -43,7 +43,20 @@ npm start
 
 打开 **http://127.0.0.1:8787**。
 
-Windows 也可以下载仓库 ZIP、解压，再双击 `Start-Windows.cmd`。若浏览器早于服务启动，刷新一次页面。macOS / Linux 使用上面的命令。端口冲突时可修改 `PORT` 环境变量。
+**Windows 推荐：** 点击仓库的 **Code → Download ZIP**，将整个 ZIP 解压，再双击 `Start-Windows.cmd`。启动成功后会自动打开浏览器，使用期间保持命令窗口开启。
+
+- 启动器先检查 `PATH` 和常见安装目录。若 Node.js 解压在其他盘且没有加入 `PATH`，会弹出文件选择窗口：进入你的 Node.js 文件夹，选择 **`node.exe` 文件**，点击“打开”。不用重装，也不修改系统环境变量。
+- 启动器始终按自身位置查找项目，不受终端当前目录影响。请保留完整的 `src`、`web` 文件夹，不要只下载或移动启动脚本。
+- 自动选择窗口不保存 Node 路径；使用便携版时，下次双击可能需要再次选择。也可在 PowerShell 中明确指定两个文件的完整路径：
+
+```powershell
+# 示例路径，请替换成你电脑上的实际文件位置。
+& "D:\Projects\ai-pulse-main\Start-Windows.cmd" "D:\Tools\nodejs\node.exe"
+```
+
+macOS / Linux 使用上面的命令。端口冲突时可修改 `PORT` 环境变量。
+
+**常见问题：** 如果手动执行 `node .\src\server.js` 时出现 `Cannot find module ...\src\server.js`，说明终端不在项目根目录。推荐直接双击启动器；使用命令行时，先进入包含 `package.json`、`src` 和 `web` 的项目文件夹。
 
 ## 测 ChatGPT / DeepSeek 聊天网页
 

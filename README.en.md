@@ -26,7 +26,20 @@ cd ai-pulse
 npm start
 ```
 
-Open **http://127.0.0.1:8787**. No `npm install` is needed. Windows users may download and extract the repository ZIP and double-click `Start-Windows.cmd`. Refresh the browser if it opens before the server starts. Override `PORT` if needed.
+Open **http://127.0.0.1:8787**. No `npm install` is needed. Override `PORT` if needed.
+
+**Windows:** choose **Code → Download ZIP**, extract the entire archive, then double-click `Start-Windows.cmd`. Keep the console open while using the app. The browser opens after the server is listening.
+
+The launcher checks PATH and common installation folders. If it cannot find Node, a file picker lets you select **`node.exe`** from a portable/custom installation. No reinstall or system PATH changes are needed. The picker does not persist the selected path, so a portable installation may require selecting it again next time.
+
+The app path is resolved relative to the launcher, independent of the terminal's working directory. Keep the launcher alongside the `src` and `web` folders. You can also pass an explicit Node executable path from PowerShell:
+
+```powershell
+# Replace these example paths with your actual locations.
+& "D:\Projects\ai-pulse-main\Start-Windows.cmd" "D:\Tools\nodejs\node.exe"
+```
+
+If a manually entered `node .\src\server.js` reports `Cannot find module`, change to the project directory containing `package.json`, `src` and `web`, or use the launcher. A missing Node installation and a wrong project directory are different problems.
 
 ## Chat workflow
 
